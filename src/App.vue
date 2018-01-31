@@ -36,16 +36,16 @@ export default {
   },
   methods: {
     addTotalTime() {
-      this.overallTime += 1;
+      this.overallTime++;
     },
     minusTotalTime() {
-      this.overallTime -= 1;
+      this.overallTime--;
     },
     increaseInterval(interval) {
       interval.length++;
     },
     decreaseInterval() {
-      this.currentInterval -= 1;
+      this.currentInterval--;
     }
   }
 }
