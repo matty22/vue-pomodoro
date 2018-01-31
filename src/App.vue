@@ -1,21 +1,24 @@
 <template>
   <div id="app">
-    <img src="./assets/logo.png">
-    <h1>{{ msg }}</h1>
-    <h2>Essential Links</h2>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank">Twitter</a></li>
-    </ul>
-    <h2>Ecosystem</h2>
-    <ul>
-      <li><a href="http://router.vuejs.org/" target="_blank">vue-router</a></li>
-      <li><a href="http://vuex.vuejs.org/" target="_blank">vuex</a></li>
-      <li><a href="http://vue-loader.vuejs.org/" target="_blank">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank">awesome-vue</a></li>
-    </ul>
+   
+   <section class="timerDisplay">
+     <div>
+       <button @click="minusTotalTime">-</button>
+       <div>
+         <p>Total Time</p>
+         <p>{{ overallTime }}</p>
+       </div>
+       <button @click="addTotalTime">+</button>
+     </div>
+     <div v-for="interval in numberOfIntervals" :key="interval.id">
+       <button @click="decreaseInterval(interval)">-</button>
+       <div>
+         <p>Interval {{ interval.id }}</p>
+         <p>{{ interval.length }}</p>
+       </div>
+       <button @click="increaseInterval(interval)">+</button>
+     </div>
+   </section>
   </div>
 </template>
 
@@ -24,13 +27,31 @@ export default {
   name: 'app',
   data () {
     return {
-      msg: 'Welcome to Your Vue.js App'
+      overallTime: 30,
+      numberOfIntervals: [
+        {id: 1, length: '0'},
+        {id: 2, length: '0'}
+      ]
+    }
+  },
+  methods: {
+    addTotalTime() {
+      this.overallTime += 1;
+    },
+    minusTotalTime() {
+      this.overallTime -= 1;
+    },
+    increaseInterval(interval) {
+      interval.length++;
+    },
+    decreaseInterval() {
+      this.currentInterval -= 1;
     }
   }
 }
 </script>
 
-<style>
+<style scoped>
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -57,4 +78,23 @@ li {
 a {
   color: #42b983;
 }
+
+.timerDisplay {
+  margin: 40px 0px;
+  font-size: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.timerDisplay > div {
+  width: 300px;
+  margin: 10px 0px;
+  border: 1px solid #cccccc;
+  padding: 20px 0px;
+  display: flex;
+  justify-content: space-around;  
+}
+
 </style>
