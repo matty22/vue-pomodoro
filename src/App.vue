@@ -59,16 +59,22 @@ export default {
       this.overallSeconds += 60;
     },
     minusTotalTime() {
+      // Prevent total time from being lower than the sum of the two intervals
+      if (this.minutes <= this.intervals[0].minutes + this.intervals[1].minutes) {
+        return false;
+      }
       this.minutes--;
       this.initialValue -= 60;
       this.overallSeconds -= 60;
     },
     increaseInterval(interval) {
-      if (interval.minutes < this.minutes) {
+      // Prevent the sum of the intervals from being increased higher than the total time
+      if (this.intervals[0].minutes + this.intervals[1].minutes >= this.minutes) {
+        return false;
+      }
         interval.minutes++;
         interval.initialValue += 60;
         interval.overallSeconds += 60;
-      }
     },
     decreaseInterval(interval) {
       if (interval.minutes > 1) {
@@ -92,7 +98,7 @@ export default {
           this.mainTimerIsRunning = false;
           clearInterval(mainTimer);
         }
-      }, 1000);
+      }, 100);
       if (this.currentInterval == 0) {
         this.intervalOneTimer();
       } else {
@@ -122,7 +128,7 @@ export default {
               this.currentInterval = 1;
               this.intervalTwoTimer();
             }
-        }, 1000);
+        }, 100);
       }
     },
     // TODO: Combine these two interval timers into a single method that takes a parameter as to which interval we are operating on
@@ -148,7 +154,7 @@ export default {
             this.currentInterval = 0;
             this.intervalOneTimer();
           }
-        }, 1000);
+        }, 100);
       }
     },
     // Clear all intervals on the window by id
