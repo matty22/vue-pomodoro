@@ -98,7 +98,7 @@ export default {
           this.mainTimerIsRunning = false;
           clearInterval(mainTimer);
         }
-      }, 100);
+      }, 1000);
       if (this.currentInterval == 0) {
         this.intervalOneTimer();
       } else {
@@ -128,7 +128,7 @@ export default {
               this.currentInterval = 1;
               this.intervalTwoTimer();
             }
-        }, 100);
+        }, 1000);
       }
     },
     // TODO: Combine these two interval timers into a single method that takes a parameter as to which interval we are operating on
@@ -154,7 +154,7 @@ export default {
             this.currentInterval = 0;
             this.intervalOneTimer();
           }
-        }, 100);
+        }, 1000);
       }
     },
     // Clear all intervals on the window by id
