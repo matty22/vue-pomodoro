@@ -11,8 +11,8 @@
        <button class="plusButton" @click="addTotalTime">+</button>
      </div>
      <div class="timerDisplays">
-      <div>{{ minutes }}:{{ seconds == 0 ? "00" : seconds }}</div>
-      <div>{{ intervals[currentInterval].minutes }}:{{ intervals[currentInterval].seconds == 0 ? "00" : intervals[currentInterval].seconds }}</div>
+      <div>{{ minutes < 10 ? "0" + minutes : minutes }}:{{ seconds < 10 ? "0" + seconds : seconds }}</div>
+      <div>{{ intervals[currentInterval].minutes < 10 ? "0" + intervals[currentInterval].minutes : intervals[currentInterval].minutes }}:{{ intervals[currentInterval].seconds < 10 ? "0" + intervals[currentInterval].seconds : intervals[currentInterval].seconds }}</div>
      </div>
      <div>
        <div class="timerSettings" v-for="(interval, index) in intervals" :key="interval.id">
@@ -46,8 +46,8 @@ export default {
       mainTimerId: 0,
       mainTimerIsRunning: false,
       intervals: [
-        {initialValue: 60, minutes: 1, seconds: 0, overallSeconds: 60, timerId: 0},
-        {initialValue: 60, minutes: 1, seconds: 0, overallSeconds: 60, timerId: 0}
+        {initialValue: 60, minutes: 1, seconds: 0, overallSeconds: 60, timerId: 0, sound: 'http://soundbible.com/mp3/Industrial Alarm-SoundBible.com-1012301296.mp3'},
+        {initialValue: 60, minutes: 1, seconds: 0, overallSeconds: 60, timerId: 0, sound: 'http://soundbible.com/mp3/Ta Da-SoundBible.com-1884170640.mp3'}
       ],
       currentInterval: 0
     }
@@ -91,68 +91,36 @@ export default {
         this.overallSeconds -= 1;
         this.minutes = Math.floor(this.overallSeconds / 60);
         this.seconds = this.overallSeconds % 60;
-        if (this.seconds < 10) {
-          this.seconds = "0" + this.seconds;
-        }
         if (this.minutes <= 0 && this.seconds <= 0) {
           this.mainTimerIsRunning = false;
           clearInterval(mainTimer);
         }
       }, 1000);
-      if (this.currentInterval == 0) {
-        this.intervalOneTimer();
-      } else {
-        this.intervalTwoTimer();
-      }
+      this.intervalTimer(this.currentInterval);
     },
-    // TODO: Combine these two interval timers into a single method that takes a parameter as to which interval we are operating on
-    intervalOneTimer() {
+    // Function that keeps track of current interval timer
+    intervalTimer(interval) {
       if (!this.mainTimerIsRunning) {
-        this.intervals[0].minutes = 0;
-        this.intervals[0].seconds = 0;
+        this.intervals[interval].minutes = 0;
+        this.intervals[interval].seconds = 0;
         return false;
       } else {
         let intervalTimer = setInterval(() => {
-          this.intervals[0].timerId = intervalTimer;
-          this.intervals[0].overallSeconds -= 1;
-          this.intervals[0].minutes = Math.floor(this.intervals[0].overallSeconds / 60);
-          this.intervals[0].seconds = this.intervals[0].overallSeconds % 60;
-          if (this.intervals[0].seconds < 10) {
-              this.intervals[0].seconds = "0" + this.intervals[0].seconds;
-            }
-            if (this.intervals[0].minutes <= 0 && this.intervals[0].seconds <= 0) {
-              clearInterval(intervalTimer);
-              this.playSound('http://soundbible.com/mp3/Industrial Alarm-SoundBible.com-1012301296.mp3');
-              this.intervals[0].minutes = this.intervals[0].initialValue / 60;
-              this.intervals[0].overallSeconds = this.intervals[0].initialValue;
-              this.currentInterval = 1;
-              this.intervalTwoTimer();
-            }
-        }, 1000);
-      }
-    },
-    // TODO: Combine these two interval timers into a single method that takes a parameter as to which interval we are operating on
-    intervalTwoTimer() {
-      if (!this.mainTimerIsRunning) {
-        this.intervals[1].minutes = 0;
-        this.intervals[1].seconds = 0;
-        return false;
-      } else {
-        let intervalTimer = setInterval(() => {
-          this.intervals[1].timerId = intervalTimer;
-          this.intervals[1].overallSeconds -= 1;
-          this.intervals[1].minutes = Math.floor(this.intervals[1].overallSeconds / 60);
-          this.intervals[1].seconds = this.intervals[1].overallSeconds % 60;
-          if (this.intervals[1].seconds < 10) {
-            this.intervals[1].seconds = "0" + this.intervals[1].seconds;
-          }
-          if (this.intervals[1].minutes <= 0 && this.intervals[1].seconds <= 0) {
+          this.intervals[interval].timerId = intervalTimer;
+          this.intervals[interval].overallSeconds -= 1;
+          this.intervals[interval].minutes = Math.floor(this.intervals[interval].overallSeconds / 60);
+          this.intervals[interval].seconds = this.intervals[interval].overallSeconds % 60;
+          if (this.intervals[interval].minutes <= 0 && this.intervals[interval].seconds <= 0) {
             clearInterval(intervalTimer);
-            this.playSound('http://soundbible.com/mp3/Ta Da-SoundBible.com-1884170640.mp3');
-            this.intervals[1].minutes = this.intervals[1].initialValue / 60;
-            this.intervals[1].overallSeconds = this.intervals[1].initialValue;
-            this.currentInterval = 0;
-            this.intervalOneTimer();
+            this.playSound(this.intervals[interval].sound);
+            this.intervals[interval].minutes = this.intervals[interval].initialValue / 60;
+            this.intervals[interval].overallSeconds = this.intervals[interval].initialValue;
+            if (this.currentInterval === 0) {
+              this.currentInterval = 1;
+            } else {
+              this.currentInterval = 0;
+            }
+            this.intervalTimer(this.currentInterval);
           }
         }, 1000);
       }
@@ -170,12 +138,13 @@ export default {
       this.minutes = this.initialValue / 60;
       this.seconds = 0;
       this.currentInterval = 0;
-      this.intervals[0].overallSeconds = this.intervals[0].initialValue;
-      this.intervals[0].minutes = this.intervals[0].initialValue / 60;
-      this.intervals[0].seconds = 0;
-      this.intervals[1].overallSeconds = this.intervals[0].initialValue;
-      this.intervals[1].minutes = this.intervals[0].initialValue / 60;
-      this.intervals[1].minutes = 0;
+      this.resetInterval(0);
+      this.resetInterval(1);
+    },
+    resetInterval(interval) {
+      this.intervals[interval].overallSeconds = this.intervals[interval].initialValue;
+      this.intervals[interval].minutes = this.intervals[interval].initialValue / 60;
+      this.intervals[interval].seconds = 0;
     },
     playSound(sound) {
       let audio = new Audio(sound);
