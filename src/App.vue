@@ -93,6 +93,11 @@ export default {
     },
     // Function runs on user hitting start button
     startTimer() {
+      // Restart the timer, and prevent multple `setInterval` being set.
+      if (this.mainTimerIsRunning) {
+        this.resetTimer()
+      }
+
       this.mainTimerIsRunning = true;
       let mainTimer = setInterval(() => { 
         this.mainTimerId = mainTimer;
@@ -141,6 +146,8 @@ export default {
     },
     // Clear all intervals and reset all timers to their intial value
     resetTimer() {
+      // When the reset is hit, turn the main timer off too.
+      this.mainTimerIsRunning = false
       this.pauseTimer();
       this.overallSeconds = this.initialValue;
       this.minutes = this.initialValue / 60;
