@@ -11,7 +11,7 @@
        <button class="plusButton" @click="addTotalTime">+</button>
      </div>
      <div class="timerDisplays">
-      <div>{{ minutes < 10 ? "0" + minutes : minutes }}:{{ seconds < 10 ? "0" + seconds : seconds }}</div>
+      <div>{{ currentTiming }}</div>
       <div>{{ intervals[currentInterval].minutes < 10 ? "0" + intervals[currentInterval].minutes : intervals[currentInterval].minutes }}:{{ intervals[currentInterval].seconds < 10 ? "0" + intervals[currentInterval].seconds : intervals[currentInterval].seconds }}</div>
      </div>
      <div>
@@ -50,6 +50,14 @@ export default {
         {initialValue: 60, minutes: 1, seconds: 0, overallSeconds: 60, timerId: 0, sound: 'http://soundbible.com/mp3/Ta Da-SoundBible.com-1884170640.mp3'}
       ],
       currentInterval: 0
+    }
+  },
+  computed: {
+    currentTiming: function () {
+      const minutes = this.minutes < 10 ? '0' + this.minutes : this.minutes
+      const seconds = this.seconds < 10 ? '0' + this.seconds : this.seconds
+
+      return `${minutes}:${seconds}`
     }
   },
   methods: {
