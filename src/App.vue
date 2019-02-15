@@ -11,7 +11,7 @@
        <button class="plusButton" @click="addTotalTime">+</button>
      </div>
      <div class="timerDisplays">
-      <div>{{ minutes < 10 ? "0" + minutes : minutes }}:{{ seconds < 10 ? "0" + seconds : seconds }}</div>
+      <div>{{ currentTiming }}</div>
       <div>{{ intervals[currentInterval].minutes < 10 ? "0" + intervals[currentInterval].minutes : intervals[currentInterval].minutes }}:{{ intervals[currentInterval].seconds < 10 ? "0" + intervals[currentInterval].seconds : intervals[currentInterval].seconds }}</div>
      </div>
      <div>
@@ -52,6 +52,14 @@ export default {
       currentInterval: 0
     }
   },
+  computed: {
+    currentTiming: function () {
+      const minutes = this.minutes < 10 ? '0' + this.minutes : this.minutes
+      const seconds = this.seconds < 10 ? '0' + this.seconds : this.seconds
+
+      return `${minutes}:${seconds}`
+    }
+  },
   methods: {
     addTotalTime() {
       this.minutes++;
@@ -85,6 +93,11 @@ export default {
     },
     // Function runs on user hitting start button
     startTimer() {
+      // Restart the timer, and prevent multple `setInterval` being set.
+      if (this.mainTimerIsRunning) {
+        this.resetTimer()
+      }
+
       this.mainTimerIsRunning = true;
       let mainTimer = setInterval(() => { 
         this.mainTimerId = mainTimer;
@@ -133,6 +146,8 @@ export default {
     },
     // Clear all intervals and reset all timers to their intial value
     resetTimer() {
+      // When the reset is hit, turn the main timer off too.
+      this.mainTimerIsRunning = false
       this.pauseTimer();
       this.overallSeconds = this.initialValue;
       this.minutes = this.initialValue / 60;
